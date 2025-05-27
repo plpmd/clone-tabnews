@@ -46,11 +46,19 @@ function DBInfo() {
   if (!isLoading && data) {
     dbStatusInformation = (
       <>
-        <div>Versão do banco de dados: {data.dependencies.database.version} </div>
-        <div>Máximo de conexões do banco de dados: {data.dependencies.database.max_connections} </div>
-        <div>Conexões abertas no banco de dados: {data.dependencies.database.opened_connections} </div>
+        <div>
+          Versão do banco de dados: {data.dependencies.database.version}{" "}
+        </div>
+        <div>
+          Máximo de conexões do banco de dados:{" "}
+          {data.dependencies.database.max_connections}{" "}
+        </div>
+        <div>
+          Conexões abertas no banco de dados:{" "}
+          {data.dependencies.database.opened_connections}{" "}
+        </div>
       </>
-    )
+    );
   }
 
   return (
