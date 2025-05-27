@@ -41,20 +41,22 @@ function DBInfo() {
     dedupingInterval: 2000,
   });
 
-  let dbVersionText = "Carregando...";
-  let dbMaxConnectionsText = "Carregando...";
-  let dbOpenedConnectionText = "Carregando...";
-  if (!isLoading) {
-    dbVersionText = data.dependencies.database.version;
-    dbMaxConnectionsText = data.dependencies.database.max_connections;
-    dbOpenedConnectionText = data.dependencies.database.opened_connections;
+  let dbStatusInformation = "Carregando...";
+
+  if (!isLoading && data) {
+    dbStatusInformation = (
+      <>
+        <div>Versão do banco de dados: {data.dependencies.database.version} </div>
+        <div>Máximo de conexões do banco de dados: {data.dependencies.database.max_connections} </div>
+        <div>Conexões abertas no banco de dados: {data.dependencies.database.opened_connections} </div>
+      </>
+    )
   }
 
   return (
     <>
-      <div>Versão do banco de dados: {dbVersionText} </div>
-      <div>Máximo de conexões do banco de dados: {dbMaxConnectionsText} </div>
-      <div>Conexões abertas no banco de dados: {dbOpenedConnectionText} </div>
+      <h2>Database</h2>
+      {dbStatusInformation}
     </>
   );
 }
