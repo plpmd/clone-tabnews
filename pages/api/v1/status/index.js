@@ -33,14 +33,14 @@ async function status(request, response) {
       },
     });
   } catch (error) {
-    console.log('error')
+    console.log("error");
     const publicErrorObject = new InternalServerError({ cause: error });
 
     console.error(publicErrorObject);
 
-    response.status(500).json({ 
-      error: 'Internal Server Error',
-    })
+    response.status(500).json({
+      error: "Internal Server Error",
+    });
   }
 }
 
