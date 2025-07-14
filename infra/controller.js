@@ -6,7 +6,7 @@ function onNoMatchHandler(request, response) {
 }
 
 function onErrorHandler(error, request, response) {
-  const publicErrorObject = new InternalServerError({ cause: error });
+  const publicErrorObject = new InternalServerError({ cause: error, statusCode: error.statusCode });
 
   console.error(publicErrorObject);
 
