@@ -14,8 +14,10 @@ function onErrorHandler(error, request, response) {
 }
 
 const controller = {
-  onNoMatchHandler,
-  onErrorHandler
+  errorHandlers: {
+    onNoMatch: onNoMatchHandler,
+    onError: onErrorHandler
+  }
 }
 
 export default controller

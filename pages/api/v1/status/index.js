@@ -5,10 +5,7 @@ import controller from "infra/controller";
 const router = createRouter();
 router.get(getHandler);
 
-export default router.handler({
-  onNoMatch: controller.onNoMatchHandler,
-  onError: controller.onErrorHandler,
-});
+export default router.handler(controller.errorHandlers);
 
 async function getHandler(request, response) {
   const updatedAt = new Date().toISOString();
