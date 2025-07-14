@@ -6,7 +6,10 @@ function onNoMatchHandler(request, response) {
 }
 
 function onErrorHandler(error, request, response) {
-  const publicErrorObject = new InternalServerError({ cause: error, statusCode: error.statusCode });
+  const publicErrorObject = new InternalServerError({
+    cause: error,
+    statusCode: error.statusCode,
+  });
 
   console.error(publicErrorObject);
 
@@ -16,8 +19,8 @@ function onErrorHandler(error, request, response) {
 const controller = {
   errorHandlers: {
     onNoMatch: onNoMatchHandler,
-    onError: onErrorHandler
-  }
-}
+    onError: onErrorHandler,
+  },
+};
 
-export default controller
+export default controller;

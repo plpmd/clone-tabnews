@@ -31,10 +31,12 @@ async function getHandler(request, response) {
       verbose: true,
       migrationsTable: "pgmigrations",
     };
-    const pendingMigrations = await migrationRunner({ ...defaultMigrationsOption, dbClient });
+    const pendingMigrations = await migrationRunner({
+      ...defaultMigrationsOption,
+      dbClient,
+    });
     return response.status(200).json(pendingMigrations);
-  }
-  finally {
+  } finally {
     await dbClient?.end();
   }
 }
