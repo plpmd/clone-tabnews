@@ -16,7 +16,6 @@ function onNoMatchHandler(request, response) {
 }
 
 function onErrorHandler(error, request, response) {
-  console.log("error");
   const publicErrorObject = new InternalServerError({ cause: error });
 
   console.error(publicErrorObject);
