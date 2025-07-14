@@ -26,6 +26,14 @@ function onErrorHandler(error, request, response) {
   response.status(publicErrorObject.status_code).json(publicErrorObject);
 }
 
+const defaultMigrationsOption = {
+  dryRun: true,
+  dir: resolve("infra", "migrations"),
+  direction: "up",
+  verbose: true,
+  migrationsTable: "pgmigrations",
+};
+
 async function getHandler(request, response) {
   let dbClient;
   try {
@@ -39,7 +47,7 @@ async function getHandler(request, response) {
       verbose: true,
       migrationsTable: "pgmigrations",
     };
-    const pendingMigrations = await migrationRunner(defaultMigrationsOption);
+    const pendingMigrations = await migrationRunner({ ...defaultMigrationsOption, dbClient });
     return response.status(200).json(pendingMigrations);
   }
   finally {
@@ -52,17 +60,9 @@ async function postHandler(request, response) {
   try {
     dbClient = await database.getNewClient();
 
-    const defaultMigrationsOption = {
-      dbClient,
-      dryRun: true,
-      dir: resolve("infra", "migrations"),
-      direction: "up",
-      verbose: true,
-      migrationsTable: "pgmigrations",
-    };
-
     const migratedMigrations = await migrationRunner({
       ...defaultMigrationsOption,
+      dbClient,
       dryRun: false,
     });
 
