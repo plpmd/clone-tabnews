@@ -10,14 +10,6 @@ export default router.handler(controller.errorHandlers);
 async function getHandler(request, response) {
   const updatedAt = new Date().toISOString();
 
-  const databaseName = process.env.POSTGRES_DB;
-  const databaseOpenendConnectionsResult = await database.query({
-    text: "SELECT count(*)::int from pg_stat_activity WHERE datname = $1;",
-    values: [databaseName],
-  });
-  const databaseOpenendConnectionsValue =
-    databaseOpenendConnectionsResult.rows[0].count;
-
   const databaseVersionResult = await database.query("SHOW server_version;");
   const databaseVersionValue = databaseVersionResult.rows[0].server_version;
 
@@ -26,6 +18,14 @@ async function getHandler(request, response) {
   );
   const databaseMaxConnectionsValue =
     databaseMaxConnectionsResult.rows[0].max_connections;
+
+  const databaseName = process.env.POSTGRES_DB;
+  const databaseOpenendConnectionsResult = await database.query({
+    text: "SELECT count(*)::int from pg_stat_activity WHERE datname = $1;",
+    values: [databaseName],
+  });
+  const databaseOpenendConnectionsValue =
+    databaseOpenendConnectionsResult.rows[0].count;
 
   response.status(200).json({
     updated_at: updatedAt,
