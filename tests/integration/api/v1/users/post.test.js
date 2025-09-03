@@ -1,4 +1,3 @@
-import { describe } from "node:test";
 import orchestrator from "tests/orchestrator.js";
 import { version as uuidVersion } from "uuid";
 
