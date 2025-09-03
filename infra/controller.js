@@ -1,11 +1,16 @@
 const { MethodNotAllowedError, InternalServerError } = require("./errors");
+import { ValidationError } from "infra/errors.js";
 
 function onNoMatchHandler(request, response) {
   const publicErrorObject = new MethodNotAllowedError();
-  response.status(publicErrorObject.status_code).json(publicErrorObject);
+  response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
 function onErrorHandler(error, request, response) {
+  if (error instanceof ValidationError) {
+    return response.status(error.statusCode).json(error);
+  }
+
   const publicErrorObject = new InternalServerError({
     cause: error,
     statusCode: error.statusCode,
@@ -13,7 +18,7 @@ function onErrorHandler(error, request, response) {
 
   console.error(publicErrorObject);
 
-  response.status(publicErrorObject.status_code).json(publicErrorObject);
+  response.status(publicErrorObject.statusCode).json(publicErrorObject);
 }
 
 const controller = {

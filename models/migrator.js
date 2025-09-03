@@ -6,6 +6,7 @@ const defaultMigrationsOption = {
   dryRun: true,
   dir: resolve("infra", "migrations"),
   direction: "up",
+  log: () => {},
   verbose: true,
   migrationsTable: "pgmigrations",
 };
