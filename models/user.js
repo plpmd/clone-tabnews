@@ -15,34 +15,6 @@ async function create(userInputValues) {
   );
   return newUser;
 
-  async function validateUniqueColumn(columnName, columnValue) {
-    const result = await database.query({
-      text: `
-      SELECT 
-        ${columnName}
-      FROM 
-        users
-      WHERE
-        LOWER(${columnName}) = LOWER($1)
-    ;`,
-      values: [columnValue],
-    });
-
-    if (result.rowCount > 0) {
-      throw new ValidationError({
-        message: `O ${columnName} informado já está sendo utilizado.`,
-        action: `Utilize outro ${columnName} para realizar o cadastro.`,
-      });
-    }
-  }
-
-  async function hashPasswordInObject(userInputValues) {
-    const hashedPassword = await password.hash(userInputValues.password);
-    userInputValues.password = hashedPassword;
-
-    return userInputValues;
-  }
-
   async function runInsertQuery(username, email, password) {
     const result = await database.query({
       text: `
@@ -57,6 +29,27 @@ async function create(userInputValues) {
     });
 
     return result.rows[0];
+  }
+}
+
+async function validateUniqueColumn(columnName, columnValue) {
+  const result = await database.query({
+    text: `
+      SELECT 
+        ${columnName}
+      FROM 
+        users
+      WHERE
+        LOWER(${columnName}) = LOWER($1)
+    ;`,
+    values: [columnValue],
+  });
+
+  if (result.rowCount > 0) {
+    throw new ValidationError({
+      message: `O ${columnName} informado já está sendo utilizado.`,
+      action: `Utilize outro ${columnName} para realizar esta operação.`,
+    });
   }
 }
 
@@ -90,9 +83,60 @@ async function findOneByUsername(username) {
   return foundUser;
 }
 
+async function update(username, userInputValues) {
+  const currentUser = await findOneByUsername(username);
+
+  if ("username" in userInputValues) {
+    await validateUniqueColumn("username", userInputValues.username);
+  }
+
+  if ("email" in userInputValues) {
+    await validateUniqueColumn("email", userInputValues.email);
+  }
+
+  if ("password" in userInputValues) {
+    await hashPasswordInObject(userInputValues);
+  }
+
+  const userWithNewValues = { ...currentUser, ...userInputValues };
+
+  const updatedUser = await runUpdateQuery(userWithNewValues);
+
+  return updatedUser;
+
+  async function runUpdateQuery(user) {
+    const result = await database.query({
+      text: `
+      UPDATE 
+        users
+      SET
+        username = $2,
+        email = $3,
+        password = $4,
+        updated_at = timezone('utc', now())
+      WHERE 
+        id = $1
+      RETURNING
+        *
+    ;`,
+      values: [user.id, user.username, user.email, user.password],
+    });
+
+    return result.rows[0];
+  }
+}
+
+async function hashPasswordInObject(userInputValues) {
+  const hashedPassword = await password.hash(userInputValues.password);
+  userInputValues.password = hashedPassword;
+
+  return userInputValues;
+}
+
 const user = {
   create,
   findOneByUsername,
+  update,
 };
 
 export default user;
