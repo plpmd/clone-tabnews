@@ -53,6 +53,36 @@ async function validateUniqueColumn(columnName, columnValue) {
   }
 }
 
+async function findOneById(id) {
+  const foundUser = await runSelectQuery(id);
+
+  async function runSelectQuery(columnValue) {
+    const result = await database.query({
+      text: `
+      SELECT 
+        *
+      FROM 
+        users
+      WHERE
+        id = $1
+      LIMIT
+        1
+    ;`,
+      values: [columnValue],
+    });
+
+    if (result.rowCount === 0) {
+      throw new NotFoundError({
+        message: "O id informado não foi encontrado no sistema.",
+        action: "Verifique se o id está digitado corretamente.",
+      });
+    }
+
+    return result.rows[0];
+  }
+  return foundUser;
+}
+
 async function findOneByUsername(username) {
   const foundUser = await runSelectQuery(username);
 
@@ -165,6 +195,7 @@ async function findOneByEmail(email) {
 
 const user = {
   create,
+  findOneById,
   findOneByUsername,
   update,
   findOneByEmail,
