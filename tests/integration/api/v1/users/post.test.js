@@ -1,7 +1,7 @@
+import password from "models/password";
+import user from "models/user.js";
 import orchestrator from "tests/orchestrator.js";
 import { version as uuidVersion } from "uuid";
-import user from "models/user.js";
-import password from "models/password";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -34,6 +34,7 @@ describe("POST api/v1/users", () => {
         username: "plpmd",
         email: "pedro@gmail.com",
         password: responseBody.password,
+        features: [],
         created_at: responseBody.created_at,
         updated_at: responseBody.updated_at,
       });

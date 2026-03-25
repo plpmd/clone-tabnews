@@ -1,7 +1,7 @@
-import orchestrator from "tests/orchestrator.js";
-import { version as uuidVersion } from "uuid";
 import session from "models/session.js";
 import setCookieParser from "set-cookie-parser";
+import orchestrator from "tests/orchestrator.js";
+import { version as uuidVersion } from "uuid";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
@@ -37,6 +37,7 @@ describe("GET /api/v1/user", () => {
         username,
         email: createdUser.email,
         password: createdUser.password,
+        features: [],
         created_at: createdUser.created_at.toISOString(),
         updated_at: createdUser.updated_at.toISOString(),
       });
