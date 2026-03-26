@@ -1,3 +1,4 @@
+import activation from "models/activation";
 import orchestrator from "tests/orchestrator";
 
 beforeAll(async () => {
@@ -8,9 +9,11 @@ beforeAll(async () => {
 });
 
 describe("Use Case: Registration flow (all successful paths)", () => {
+  const testEmail = "registration.flow@gmail.com";
+  const testUsername = "RegistrationFlow";
+  let createdUserResponseBody;
+
   test("Create user account", async () => {
-    const testEmail = "registration.flow@gmail.com";
-    const testUsername = "RegistrationFlow";
     const response = await fetch("http://localhost:3000/api/v1/users", {
       method: "POST",
       headers: {
@@ -25,20 +28,31 @@ describe("Use Case: Registration flow (all successful paths)", () => {
 
     expect(response.status).toBe(201);
 
-    const responseBody = await response.json();
+    createdUserResponseBody = await response.json();
 
-    expect(responseBody).toEqual({
-      id: responseBody.id,
+    expect(createdUserResponseBody).toEqual({
+      id: createdUserResponseBody.id,
       username: testUsername,
       email: testEmail,
-      password: responseBody.password,
+      password: createdUserResponseBody.password,
       features: ["read:activation-token"],
-      created_at: responseBody.created_at,
-      updated_at: responseBody.updated_at,
+      created_at: createdUserResponseBody.created_at,
+      updated_at: createdUserResponseBody.updated_at,
     });
   });
 
-  test("Receive activation email", async () => {});
+  test("Receive activation email", async () => {
+    const lastEmail = await orchestrator.getLastEmail();
+    const activationToken = await activation.findOneByUserId(
+      createdUserResponseBody.id,
+    );
+
+    expect(lastEmail.sender).toBe("<contato@clonetabnews.com>");
+    expect(lastEmail.recipients[0]).toBe(`<${testEmail}>`);
+    expect(lastEmail.subject).toBe("Ative seu cadastro no CloneTabNews");
+    expect(lastEmail.text).toContain(testUsername);
+    expect(lastEmail.text).toContain(`${activationToken.id}`);
+  });
 
   test("Activate account", async () => {});
 
