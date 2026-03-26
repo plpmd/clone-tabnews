@@ -201,12 +201,36 @@ async function findOneByEmail(email) {
   return foundUser;
 }
 
+async function setFeatures(userId, features) {
+  const updatedUser = await runUpdateQuery(userId, features);
+  return updatedUser;
+
+  async function runUpdateQuery(userId, features) {
+    const result = await database.query({
+      text: `
+      UPDATE
+        users
+      SET
+        features = $2
+      WHERE
+        id = $1
+      RETURNING
+        *
+    ;`,
+      values: [userId, features],
+    });
+
+    return result.rows[0];
+  }
+}
+
 const user = {
   create,
   findOneById,
   findOneByUsername,
   update,
   findOneByEmail,
+  setFeatures,
 };
 
 export default user;
